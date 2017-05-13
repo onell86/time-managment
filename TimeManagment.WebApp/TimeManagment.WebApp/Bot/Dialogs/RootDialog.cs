@@ -3,21 +3,20 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 
-namespace TimeManagment.WebApp.Dialogs
+namespace TimeManagment.WebApp.Bot.Dialogs
 {
     [Serializable]
-    public class RootDialog : IDialog<object>
+    public class RootDialog : IDialog<IMessageActivity>
     {
         public Task StartAsync(IDialogContext context)
         {
             context.Wait(MessageReceivedAsync);
-
             return Task.CompletedTask;
         }
 
-        private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
+        private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
-            var activity = await result as Activity;
+            var activity = await result;
 
             // calculate something for us to return
             int length = (activity.Text ?? string.Empty).Length;

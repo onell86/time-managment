@@ -2,14 +2,17 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Autofac;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
+using TimeManagment.WebApp.Bot.Dialogs;
 
 namespace TimeManagment.WebApp.Controllers
 {
     [BotAuthentication()]
     public class MessagesController : ApiController
     {
+
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
@@ -18,7 +21,11 @@ namespace TimeManagment.WebApp.Controllers
         {
             if (activity.Type == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+                using (var scope = Conversation.Container.BeginLifetimeScope())
+                {
+                    var dialog = scope.Resolve<CarouselCardsDialog>();
+                    await Conversation.SendAsync(activity, () => dialog);
+                }
             }
             else
             {
